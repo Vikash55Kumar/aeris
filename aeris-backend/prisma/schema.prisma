@@ -1,0 +1,261 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  DISPATCHER
+  GUEST
+}
+
+enum SeverityLevel {
+  LOW
+  MODERATE
+  HIGH
+  VERY_HIGH
+  CRITICAL
+}
+
+enum EventStage {
+  MOISTURE_ACCUMULATION
+  CONVECTIVE_INITIATION
+  INTENSIFICATION
+  HEAVY_RAINFALL
+  CLOUDBURST_POTENTIAL
+  HYDROLOGICAL_RESPONSE
+  FLOOD_RISK
+  DECAY
+}
+
+enum CapStatus {
+  ACTUAL
+  EXERCISE
+  SYSTEM
+  TEST
+  DRAFT
+}
+
+enum CapMsgType {
+  ALERT
+  UPDATE
+  CANCEL
+  ACK
+  ERROR
+}
+
+enum CapUrgency {
+  IMMEDIATE
+  EXPECTED
+  FUTURE
+  PAST
+  UNKNOWN
+}
+
+enum CapSeverity {
+  EXTREME
+  SEVERE
+  MODERATE
+  MINOR
+  UNKNOWN
+}
+
+enum CapCertainty {
+  OBSERVED
+  LIKELY
+  POSSIBLE
+  UNLIKELY
+  UNKNOWN
+}
+
+enum RiverGaugeStatus {
+  NORMAL
+  MODERATE
+  ELEVATED
+  WARNING
+  DANGER
+}
+
+model Jurisdiction {
+  id          String   @id @default(uuid())
+  code        String   @unique
+  name        String
+  region      String
+  status      String   @default("Normal") // "Red Alert", "Watch", "Normal"
+  centerLat   Float
+  centerLng   Float
+  zoomLevel   Int      @default(11)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  users            User[]
+  weatherEvents    WeatherEvent[]
+  telemetryRecords AtmosphericTelemetry[]
+  riverGauges      RiverGauge[]
+  emergencyAlerts  EmergencyAlert[]
+
+  @@map("jurisdictions")
+}
+
+model User {
+  id             String        @id @default(uuid())
+  jurisdictionId String?
+  jurisdiction   Jurisdiction? @relation(fields: [jurisdictionId], references: [id], onDelete: SetNull)
+  email          String        @unique
+  name           String
+  subtitle       String?
+  agencyName     String?
+  passwordHash   String
+  role           Role          @default(GUEST)
+  isActive       Boolean       @default(true)
+  lastLoginAt    DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@map("users")
+}
+
+model WeatherEvent {
+  id                 String             @id @default(uuid())
+  jurisdictionId     String
+  jurisdiction       Jurisdiction       @relation(fields: [jurisdictionId], references: [id], onDelete: Cascade)
+  code               String             @unique // e.g. "A1027", "MCS-MUMBAI-04"
+  title              String             // e.g. "Severe Convective System"
+  eventType          String             // e.g. "Mesoscale Convective Storm"
+  stage              EventStage         @default(INTENSIFICATION)
+  severity           SeverityLevel      @default(HIGH)
+  confidencePct      Float              @default(85.0)
+  description        String
+  locationName       String
+  centerLat          Float
+  centerLng          Float
+  trajectoryDir      String             @default("NE")
+  trajectorySpeedKmh Float              @default(25.0)
+  rainMinMm          Float              @default(80.0)
+  rainMaxMm          Float              @default(120.0)
+  peakDurationHours  String             @default("2–3")
+  detectedAt         DateTime           @default(now())
+  expectedOnset      DateTime?
+  expectedPeak       DateTime?
+  status             String             @default("ACTIVE") // "ACTIVE", "DECAYED", "RESOLVED"
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  affectedAreas   EventAffectedArea[]
+  emergencyAlerts EmergencyAlert[]
+
+  @@map("weather_events")
+}
+
+model EventAffectedArea {
+  id             String        @id @default(uuid())
+  weatherEventId String
+  weatherEvent   WeatherEvent  @relation(fields: [weatherEventId], references: [id], onDelete: Cascade)
+  rank           Int           @default(1)
+  name           String
+  severity       SeverityLevel @default(HIGH)
+  lat            Float?
+  lng            Float?
+  createdAt      DateTime      @default(now())
+
+  @@map("event_affected_areas")
+}
+
+model AtmosphericTelemetry {
+  id                     String        @id @default(uuid())
+  jurisdictionId         String
+  jurisdiction           Jurisdiction  @relation(fields: [jurisdictionId], references: [id], onDelete: Cascade)
+  stationId              String        @default("IMD_MUMBAI_RADAR_01")
+  cloudTopTempCelsius    Float         // e.g. -72.4
+  coolingRatePerHour     Float         // e.g. -8.2
+  radarReflectivityDbz   Float         // e.g. 52.0
+  dopplerRadialVelocityKt Float        // e.g. 24.5
+  lightningFlashesPerMin Int           // e.g. 36
+  precipitableWaterMm    Float         // e.g. 68.2
+  capeJkg                Float         // e.g. 2850.0
+  surfacePrecipRateMmHr  Float         // e.g. 92.0
+  windSpeedKmh           Float         // e.g. 25.0
+  windDirection          String        // e.g. "NE"
+  recordedAt             DateTime      @default(now())
+
+  @@index([recordedAt])
+  @@map("atmospheric_telemetry")
+}
+
+model RiverGauge {
+  id             String           @id @default(uuid())
+  jurisdictionId String
+  jurisdiction   Jurisdiction     @relation(fields: [jurisdictionId], references: [id], onDelete: Cascade)
+  stationCode    String           @unique
+  name           String
+  locationName   String
+  lat            Float
+  lng            Float
+  currentLevelM  Float
+  warningLevelM  Float
+  dangerLevelM   Float
+  trendPerHourM  Float            @default(0.0)
+  capacityPct    Float            @default(0.0)
+  dischargeM3s   Float            @default(0.0)
+  status         RiverGaugeStatus @default(NORMAL)
+  updatedAt      DateTime         @default(now())
+
+  @@map("river_gauges")
+}
+
+model InundationZone {
+  id               String        @id @default(uuid())
+  name             String
+  region           String        @default("Mumbai MMR")
+  severity         SeverityLevel @default(HIGH)
+  waterlogDepthCm  Float         @default(0.0)
+  riskTag          String        @default("INUNDATION RISK")
+  polygonCoordsJson String        // Stored GeoJSON polygon coordinates array
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  @@map("inundation_zones")
+}
+
+model EmergencyAlert {
+  id             String       @id @default(uuid())
+  jurisdictionId String
+  jurisdiction   Jurisdiction @relation(fields: [jurisdictionId], references: [id], onDelete: Cascade)
+  weatherEventId String?
+  weatherEvent   WeatherEvent? @relation(fields: [weatherEventId], references: [id], onDelete: SetNull)
+  identifier     String       @unique // e.g. "AERIS-CAP-2026-07-21-004"
+  sender         String
+  sentAt         DateTime     @default(now())
+  status         CapStatus    @default(ACTUAL)
+  msgType        CapMsgType   @default(ALERT)
+  category       String       @default("Met")
+  eventTitle     String
+  urgency        CapUrgency   @default(IMMEDIATE)
+  severity       CapSeverity  @default(SEVERE)
+  certainty      CapCertainty @default(LIKELY)
+  headline       String
+  description    String
+  instruction    String?
+  targetAreaDesc String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@map("emergency_alerts")
+}
+
+model CorridorPreset {
+  id                       String   @id @default(uuid())
+  code                     String   @unique
+  title                    String
+  fromName                 String
+  toName                   String
+  defaultDepartureOffsetMin Int     @default(45)
+  waypointsJson            String   // Array of lat/lng waypoints
+  createdAt                DateTime @default(now())
+
+  @@map("corridor_presets")
+}

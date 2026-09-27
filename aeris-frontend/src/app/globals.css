@@ -1,0 +1,67 @@
+@import "leaflet/dist/leaflet.css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-navy: #0B2F56;
+  --color-cerulean: #087693;
+  --color-turquoise: #11D8CC;
+  --color-surface: #08223F;
+  --color-midnight: #061B33;
+  --color-card: #0F3B6A;
+  --color-border: #164E85;
+  --color-offwhite: #F5F8FB;
+  --color-teal: #087693;
+  --color-cyan: #11D8CC;
+  --color-blue: #0B2F56;
+  --color-amber: #F59E0B;
+  --color-red: #DC2626;
+  --color-green: #10B981;
+}
+
+/* Base Body: Cool Off-White #F5F8FB as specified */
+body {
+  background-color: #F5F8FB;
+  color: #0B2F56;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Command Center Dark Console Workspace */
+.command-center-console {
+  background-color: #08223F;
+  color: #F5F8FB;
+}
+
+/* Government Portal High-Contrast Crisp Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F1F5F9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #94A3B8;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #087693;
+}
+
+/* Dark Console Scrollbars */
+.command-center-console ::-webkit-scrollbar-track {
+  background: #08223F;
+}
+
+.command-center-console ::-webkit-scrollbar-thumb {
+  background: #164E85;
+}
+
+.command-center-console ::-webkit-scrollbar-thumb:hover {
+  background: #11D8CC;
+}

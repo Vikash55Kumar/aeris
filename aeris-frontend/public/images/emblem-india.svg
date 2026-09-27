@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 130" fill="none">
+  <!-- Lion Capital of Ashoka Stylized Silhouette for Official Header -->
+  <g fill="#D97706" opacity="0.95">
+    <!-- Ashoka Base Wheel (Ashoka Chakra) -->
+    <circle cx="50" cy="106" r="14" stroke="#D97706" stroke-width="2.5" fill="none"/>
+    <circle cx="50" cy="106" r="3" fill="#D97706"/>
+    <!-- 24 Spokes -->
+    <path d="M50,92 L50,120 M36,106 L64,106 M40,96 L60,116 M40,116 L60,96" stroke="#D97706" stroke-width="1.2"/>
+    <path d="M43,93 L57,119 M37,100 L63,112 M43,119 L57,93 M37,112 L63,100" stroke="#D97706" stroke-width="0.8"/>
+    <!-- Base Abacus -->
+    <rect x="20" y="122" width="60" height="5" rx="1.5"/>
+    <rect x="26" y="87" width="48" height="4" rx="1"/>
+    <!-- Bull and Horse Reliefs on sides of wheel -->
+    <ellipse cx="28" cy="106" rx="4" ry="3"/>
+    <ellipse cx="72" cy="106" rx="4" ry="3"/>
+    <!-- Three Lions Pillars -->
+    <!-- Center Lion -->
+    <path d="M44,48 Q40,32 50,22 Q60,32 56,48 Q64,52 64,68 Q64,84 56,86 L44,86 Q36,84 36,68 Q36,52 44,48 Z"/>
+    <path d="M47,20 Q50,14 53,20 Q50,23 47,20 Z" fill="#F59E0B"/>
+    <!-- Left Lion Head Profile -->
+    <path d="M38,46 Q28,34 32,24 Q38,20 42,28 Q39,38 42,46 Z"/>
+    <path d="M34,48 Q22,54 24,70 Q26,84 36,86 L38,82 Q30,76 30,66 Q30,56 38,48 Z"/>
+    <!-- Right Lion Head Profile -->
+    <path d="M62,46 Q72,34 68,24 Q62,20 58,28 Q61,38 58,46 Z"/>
+    <path d="M66,48 Q78,54 76,70 Q74,84 64,86 L62,82 Q70,76 70,66 Q70,56 62,48 Z"/>
+    <!-- Lion Mane Fur Details -->
+    <path d="M44,52 Q50,60 56,52 Q50,68 44,52 Z" fill="#F59E0B" opacity="0.6"/>
+    <path d="M43,62 Q50,72 57,62 Q50,80 43,62 Z" fill="#F59E0B" opacity="0.6"/>
+  </g>
+  <text x="50" y="130" font-family="-apple-system, sans-serif" font-size="5" font-weight="bold" fill="#D97706" text-anchor="middle" letter-spacing="1">सत्यमेव जयते</text>
+</svg>

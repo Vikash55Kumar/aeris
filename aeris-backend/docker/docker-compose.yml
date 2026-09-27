@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgis/postgis:16-3.4-alpine
+    container_name: aeris-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: aeris_user
+      POSTGRES_PASSWORD: aeris_password
+      POSTGRES_DB: aeris_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - aeris_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aeris_user -d aeris_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: aeris-backend
+    restart: always
+    environment:
+      PORT: 8000
+      NODE_ENV: production
+      DATABASE_URL: "postgresql://aeris_user:aeris_password@postgres:5432/aeris_db?schema=public"
+      JWT_SECRET: "aeris_super_secure_jwt_secret_key_2026_sdma_ndma"
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  aeris_pgdata:
